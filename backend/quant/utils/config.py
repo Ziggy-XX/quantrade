@@ -4,11 +4,10 @@ from pathlib import Path
 from dotenv import load_dotenv
 from longport.openapi import Config
 
-# 加载环境变量
-load_dotenv()
-
-
+# 加载环境变量（显式指定项目根目录，避免在不同工作目录下读取失败）
 BASE_DIR = Path(__file__).resolve().parents[3]
+ENV_FILE = BASE_DIR / ".env"
+load_dotenv(ENV_FILE)
 DEFAULT_LOG_DIR = BASE_DIR / "logs"
 DEFAULT_TASK_LOG_DIR = DEFAULT_LOG_DIR / "tasks"
 DEFAULT_SERVER_LOG_FILE = DEFAULT_LOG_DIR / "server.log"

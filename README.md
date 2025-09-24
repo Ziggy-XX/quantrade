@@ -136,6 +136,7 @@ npx @tailwindcss/cli -i src/styles/index.raw.css -o src/styles/index.css --watch
 ### 额外说明
 
 - 如果未配置 `TASK_LOG_DIR` 或 `SERVER_LOG_FILE`，系统会自动在项目根目录下的 `logs/` 目录中生成任务日志与服务日志，确保在 Windows 上无需额外的路径配置即可运行。
+- 脚本会自动切换到项目根目录执行命令，即使在其他位置调用也能正确加载 `.env` 配置。
 
 ## 策略开发
 

@@ -1,3 +1,8 @@
+Set-StrictMode -Version Latest
+
+$ProjectRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
+Push-Location $ProjectRoot
+
 Write-Host "==================================="
 Write-Host "LongPort 量化交易系统"
 Write-Host "==================================="
@@ -19,18 +24,25 @@ if (-not $pythonCommand) {
     exit 1
 }
 
-if (-not (Test-Path -Path ".env")) {
+$envFile = Join-Path $ProjectRoot ".env"
+
+if (-not (Test-Path -Path $envFile)) {
     Write-Error "未找到 .env 配置文件，请在项目根目录创建后再运行。"
     exit 1
 }
 
-Write-Host "初始化数据库..."
-& $pythonCommand "backend/init_db.py"
-if ($LASTEXITCODE -ne 0) {
-    Write-Error "数据库初始化失败。您可以单独运行 '$pythonCommand backend/init_db.py' 进行调试。"
-    exit $LASTEXITCODE
-}
+try {
+    Write-Host "初始化数据库..."
+    & $pythonCommand (Join-Path $ProjectRoot "backend/init_db.py")
+    if ($LASTEXITCODE -ne 0) {
+        Write-Error "数据库初始化失败。您可以单独运行 '$pythonCommand backend/init_db.py' 进行调试。"
+        exit $LASTEXITCODE
+    }
 
-Write-Host "==================================="
-Write-Host "启动 FastAPI 服务器..."
-& $pythonCommand "backend/server.py"
+    Write-Host "==================================="
+    Write-Host "启动 FastAPI 服务器..."
+    & $pythonCommand (Join-Path $ProjectRoot "backend/server.py")
+}
+finally {
+    Pop-Location
+}

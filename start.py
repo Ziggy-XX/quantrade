@@ -1,4 +1,4 @@
-"""Cross-platform launcher for the PawQuant Trade backend."""
+"""PawQuant Trade 后端的跨平台启动器。"""
 from __future__ import annotations
 
 import subprocess
