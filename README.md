@@ -78,20 +78,36 @@ MYSQL_DATABASE=Stock
 
 ### 4. 启动后端服务
 
-#### 方法一：使用启动脚本（推荐）
+> **提示**：项目现在提供跨平台启动脚本。`start.py` 会自动检查 `.env` 文件并按顺序执行数据库初始化与服务启动，适用于 Windows、macOS 和 Linux。
 
-```bash
-bash start.sh
-```
+#### 方法一：使用跨平台脚本（推荐）
+
+- 通用方式：
+
+  ```bash
+  python start.py
+  ```
+
+- Windows PowerShell：
+
+  ```powershell
+  ./start.ps1
+  ```
+
+- Linux / macOS：
+
+  ```bash
+  bash start.sh
+  ```
 
 #### 方法二：手动启动
 
 ```bash
 # 先初始化数据库
-python3 init_db.py
+python backend/init_db.py
 
 # 启动服务
-python3 server.py
+python backend/server.py
 ```
 
 后端服务将在 `http://localhost:8000` 启动。（默认配置地址，也可以改）
@@ -116,6 +132,11 @@ npx @tailwindcss/cli -i src/styles/index.raw.css -o src/styles/index.css --watch
 ```
 
 正式发布的话直接`npm run build`发布静态文件，然后用 nginx 部署前端文件。
+
+### 额外说明
+
+- 如果未配置 `TASK_LOG_DIR` 或 `SERVER_LOG_FILE`，系统会自动在项目根目录下的 `logs/` 目录中生成任务日志与服务日志，确保在 Windows 上无需额外的路径配置即可运行。
+- 脚本会自动切换到项目根目录执行命令，即使在其他位置调用也能正确加载 `.env` 配置。
 
 ## 策略开发
 

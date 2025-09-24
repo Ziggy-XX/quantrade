@@ -1,19 +1,41 @@
 import os
+from pathlib import Path
+
 from dotenv import load_dotenv
 from longport.openapi import Config
 
-# 加载环境变量
-load_dotenv()
+# 加载环境变量（显式指定项目根目录，避免在不同工作目录下读取失败）
+BASE_DIR = Path(__file__).resolve().parents[3]
+ENV_FILE = BASE_DIR / ".env"
+load_dotenv(ENV_FILE)
+DEFAULT_LOG_DIR = BASE_DIR / "logs"
+DEFAULT_TASK_LOG_DIR = DEFAULT_LOG_DIR / "tasks"
+DEFAULT_SERVER_LOG_FILE = DEFAULT_LOG_DIR / "server.log"
 
 
 class ServerConfig:
     def __init__(self):
         self.api_host = os.getenv("API_HOST", "0.0.0.0")
         self.api_port = int(os.getenv("API_PORT", 8000))
-        self.task_log_dir = os.getenv("TASK_LOG_DIR")
-        if not os.path.exists(self.task_log_dir):
-            os.makedirs(self.task_log_dir)
-        self.server_log_file = os.getenv("SERVER_LOG_FILE")
+
+        task_log_dir_env = os.getenv("TASK_LOG_DIR")
+        task_log_dir = (
+            Path(task_log_dir_env).expanduser()
+            if task_log_dir_env
+            else DEFAULT_TASK_LOG_DIR
+        )
+        task_log_dir.mkdir(parents=True, exist_ok=True)
+        self.task_log_dir = str(task_log_dir)
+
+        server_log_file_env = os.getenv("SERVER_LOG_FILE")
+        server_log_file = (
+            Path(server_log_file_env).expanduser()
+            if server_log_file_env
+            else DEFAULT_SERVER_LOG_FILE
+        )
+        server_log_file.parent.mkdir(parents=True, exist_ok=True)
+        self.server_log_file = str(server_log_file)
+
         self.server_log_level = os.getenv("SERVER_LOG_LEVEL", "INFO")
 
 

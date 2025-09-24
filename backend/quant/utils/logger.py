@@ -1,5 +1,6 @@
 import logging
-import os
+from pathlib import Path
+
 from .config import server_config
 
 
@@ -30,12 +31,15 @@ console_handler.setLevel(server_config.server_log_level)
 formatter = LevelSignFormatter("[%(asctime)s] %(levelsign)s [%(name)s] %(message)s")
 console_handler.setFormatter(formatter)
 base_logger.addHandler(console_handler)
-if os.path.exists(os.path.dirname(server_config.server_log_file)):
-    file_handler = logging.FileHandler(server_config.server_log_file)
+
+server_log_file = Path(server_config.server_log_file)
+try:
+    server_log_file.parent.mkdir(parents=True, exist_ok=True)
+    file_handler = logging.FileHandler(server_log_file)
     file_handler.setLevel(server_config.server_log_level)
     file_handler.setFormatter(formatter)
     base_logger.addHandler(file_handler)
-else:
+except (OSError, ValueError) as error:
     base_logger.warning(
-        f"日志文件目录不存在，无法创建日志文件: {server_config.server_log_file}"
+        "日志文件创建失败，继续使用控制台输出: %s", error
     )

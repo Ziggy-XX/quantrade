@@ -2,13 +2,23 @@
 
 # LongPort量化交易系统启动脚本
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR" || {
+    echo "错误: 无法切换到脚本目录"
+    exit 1
+}
+
 echo "==================================="
 echo "LongPort 量化交易系统"
 echo "==================================="
 
 # 检查Python环境
-if ! command -v python3 &> /dev/null; then
-    echo "错误: 未找到 Python3"
+if command -v python3 &> /dev/null; then
+    PYTHON_CMD="python3"
+elif command -v python &> /dev/null; then
+    PYTHON_CMD="python"
+else
+    echo "错误: 未找到 Python 解释器"
     exit 1
 fi
 
@@ -21,11 +31,11 @@ fi
 
 # 使用专门的初始化脚本
 echo "初始化数据库..."
-python3 backend/init_db.py
+"$PYTHON_CMD" "$SCRIPT_DIR/backend/init_db.py"
 
 if [ $? -ne 0 ]; then
     echo "数据库初始化失败，请检查配置"
-    echo "您可以单独运行 'python3 backend/init_db.py' 来调试数据库问题"
+    echo "您可以单独运行 '${PYTHON_CMD} backend/init_db.py' 来调试数据库问题"
     exit 1
 fi
 
@@ -33,4 +43,4 @@ fi
 echo "==================================="
 echo "启动 FastAPI 服务器..."
 
-python3 backend/server.py
+"$PYTHON_CMD" "$SCRIPT_DIR/backend/server.py"

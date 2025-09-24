@@ -8,17 +8,22 @@ from re import S
 import sys
 import os
 import logging
+from pathlib import Path
+
 from dotenv import load_dotenv
 import pymysql
 from sqlalchemy import create_engine, text
+
 from quant.utils.logger import base_logger, SUCCESS
 
 logger = base_logger.getChild("Database")
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+ENV_FILE = PROJECT_ROOT / ".env"
 
 
 def test_mysql_connection():
     """测试MySQL基础连接"""
-    load_dotenv()
+    load_dotenv(ENV_FILE)
 
     try:
         connection = pymysql.connect(
@@ -37,7 +42,7 @@ def test_mysql_connection():
 
 def create_database_manually():
     """手动创建数据库"""
-    load_dotenv()
+    load_dotenv(ENV_FILE)
 
     database_name = os.getenv("MYSQL_DATABASE", "Stock")
 
